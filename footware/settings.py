@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-h+^*$i8bjzm^s49-4f^i8va!b#j-7drc1ch7aeodu(op@1%i0_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['curd1-hbi4.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
