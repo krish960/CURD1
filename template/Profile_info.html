@@ -1,0 +1,89 @@
+{% include "navbar.html" %}
+
+<div class="container" style="margin-top:-15px">
+    {% if shop|length == 0 %}
+        <h2 class="mb-4 text-center mt-3">Add Shop Information</h2>
+        
+        <form action="/save_bill_info/" method="post" class="p-4 border rounded bg-light">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="shop_name" class="form-label">Enter Shop Name</label>
+                    <input type="text" id="shop_name" name="shop_name" class="form-control" placeholder="Shop Name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="shop_owner_name" class="form-label">Enter Shop Owner Name</label>
+                    <input type="text" id="shop_owner_name" name="shop_owner_name" class="form-control" placeholder="Owner Name" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="shop_number" class="form-label">Enter Shop Number</label>
+                    <input type="number" id="shop_number" name="shop_number" class="form-control" placeholder="Shop Number" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="shop_email" class="form-label">Enter Shop Email</label>
+                    <input type="email" id="shop_email" name="shop_email" class="form-control" placeholder="Shop Email" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="shop_address" class="form-label">Enter Address</label>
+                    <input type="text" id="shop_address" name="shop_address" class="form-control" placeholder="Address" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Save Shop</button>
+        </form>
+    {% else %}
+        <h2 class="mb-4 text-center mt-3">Edit Shop Information</h2>
+
+        <form action="/save_bill_info/" method="post" class="p-4 border rounded bg-light">
+            {% csrf_token %}
+            
+            {% if edit_info %}
+                <input type="hidden" name="id" value="{{ edit_info.id }}">
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="shop_name" class="form-label">Enter Shop Name</label>
+                    <input type="text" id="shop_name" name="shop_name" class="form-control" placeholder="Shop Name" 
+                           value="{% if edit_info %}{{ edit_info.shop_name }}{% endif %}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="shop_owner_name" class="form-label">Enter Shop Owner Name</label>
+                    <input type="text" id="shop_owner_name" name="shop_owner_name" class="form-control" placeholder="Owner Name"
+                           value="{% if edit_info %}{{ edit_info.shop_owner_name }}{% endif %}" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="shop_number" class="form-label">Enter Shop Number</label>
+                    <input type="number" id="shop_number" name="shop_number" class="form-control" placeholder="Shop Number"
+                           value="{% if edit_info %}{{ edit_info.shop_number }}{% endif %}" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="shop_email" class="form-label">Enter Shop Email</label>
+                    <input type="email" id="shop_email" name="shop_email" class="form-control" placeholder="Shop Email"
+                           value="{% if edit_info %}{{ edit_info.shop_email }}{% endif %}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="shop_address" class="form-label">Enter Address</label>
+                    <input type="text" id="shop_address" name="shop_address" class="form-control" placeholder="Address"
+                           value="{% if edit_info %}{{ edit_info.shop_address }}{% endif %}" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Update Shop</button>
+        </form>
+    {% endif %}
+
+   
+    </div>
+</div>
+
+{% include "footer.html" %}

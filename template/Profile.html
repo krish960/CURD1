@@ -1,0 +1,147 @@
+{% include "navbar.html" %}
+
+<style type="text/css">
+  .profile-box {
+    border: 1px solid #ddd;
+    padding: 20px;
+    background-color: #f9f9f9;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 50px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .profile-box:hover {
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .profile-logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  .profile-box p {
+    font-size: 16px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .profile-box p strong {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .profile-box span {
+    color: #555;
+  }
+
+  .profile-box input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border 0.3s;
+  }
+
+  .profile-box input:focus {
+    border: 1px solid #4CAF50;
+    outline: none;
+  }
+
+  .profile-box button {
+    padding: 12px 25px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  .profile-box button:hover {
+    background-color: #45a049;
+  }
+
+  .edit-form {
+    display: none;
+    width: 100%;
+  }
+
+  .edit-form input {
+    margin-bottom: 20px;
+  }
+
+  .edit-button {
+    padding: 12px 25px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  .edit-button:hover {
+    background-color: #1976D2;
+  }
+
+  #edit {
+    position: fixed;
+    top: 75px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  }
+
+  #edit i {
+    font-size: 18px;
+  }
+
+  #edit:hover {
+    background-color: #45a049;
+  }
+
+  @media (max-width: 768px) {
+    .profile-box {
+      width: 90%;
+      margin-top: 20px;
+    }
+
+    #edit {
+      right: 10px;
+      top: 85px;
+    }
+  }
+</style>
+
+<div id="profile-details" class="profile-box">
+  <img src="/static/Footware_software_lago.png" alt="Logo" class="profile-logo">
+
+  <div id="display-info">
+    {% for shops in shop %}
+    <p><strong>Business Name:</strong> <span>{{shops.shop_name}}</span></p>
+    <p><strong>Owner Name:</strong> <span id="owner-name">{{shops.shop_owner_name}}</span></p>
+    <p><strong>Mobile No:</strong> <span id="mobile-no">{{shops.shop_number}}</span></p>
+    <p><strong>Email:</strong> {{shops.shop_email}}</span></p>
+    <p><strong>Shop Address:</strong> <span id="shop-address">{{shops.shop_address}}</span></p>
+    {% endfor %}
+  </div>
+
+
+{% include "footer.html" %}

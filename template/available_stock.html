@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Stock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(to right, #e0f7fa, #f8f9fa);
+            font-family: 'Arial', sans-serif;
+            color: #343a40;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #495057;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .card-header {
+            background: linear-gradient(to right, #343a40, #495057);
+            color: #ffffff;
+            text-align: center;
+            font-size: 1.25rem;
+            padding: 1rem;
+        }
+        .table-container {
+            padding: 1rem;
+        }
+        .table {
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 100%;
+        }
+        .table thead th {
+            background-color: #495057;
+            color: #ffffff;
+            text-align: center;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+        .table tbody tr:nth-child(odd) {
+            background-color: #f8f9fa;
+        }
+        .table tbody tr:hover {
+            background-color: #e9ecef;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn {
+            border-radius: 25px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .action-buttons a {
+            margin: 0 5px;
+        }
+        .highlight-stock {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stock-status {
+            text-align: center;
+            padding: 0.5rem;
+            font-weight: bold;
+        }
+        .new-icon {
+            color: green;
+        }
+        .old-icon {
+            color: red;
+        }
+        .new-stock {
+            background-color: #e0f7fa;
+        }
+        .old-stock {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+    {% include "navbar.html" %}
+
+    <div class="container">
+        <h1 class="text-center">Available Stock</h1>
+         <button type="button" class="btn btn-outline-primary w-25 ms-3" onclick="location.href='/add_brand'">
+                <i class="fa fa-plus-circle"></i> Add New Stock
+            </button>
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Serial No</th>
+                        <th>Brand Name</th>
+                        <th>Available Product Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in brand %}
+                    <tr class="{% if i.add_product_value > 50 %}new-stock{% else %}old-stock{% endif %}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ i.brandr_name }}</td>
+                        <td class="highlight-stock ms-5">{{  i.add_product_value }}
+
+                        </td>
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+
+    
+</body>
+</html>

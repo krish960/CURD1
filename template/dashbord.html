@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        h4 {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-box {
+            position: relative;
+            border-radius: 15px;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.1) 0px 6px 12px;
+            padding: 25px;
+            text-align: center;
+            width: 250px;
+            height: 170px;
+            color: #333;
+            text-decoration: none;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-box:hover {
+            transform: translateY(-5px);
+            box-shadow: rgba(0, 0, 0, 0.2) 0px 10px 20px;
+        }
+
+        .dashboard-box i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+
+        .dashboard-box h3 {
+            font-size: 18px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .dashboard-box p {
+            font-size: 26px;
+            margin: 10px 0 0;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .dashboard-box {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+
+        .chart-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.1) 0px 6px 12px;
+        }
+    </style>
+</head>
+<body>
+    {% include "navbar.html" %}
+    <h4>Today's Dashboard Info</h4>
+
+    <div class="dashboard">
+        <a href="/customer_visits" class="dashboard-box customer-visits">
+            <i class="fas fa-user-check"></i>
+            <h3>Customer Visits</h3>
+            <p>{{ custmore|length }}</p>
+        </a>
+
+        <a href="/available_stock" class="dashboard-box available-stock">
+            <i class="fas fa-warehouse"></i>
+            <h3>Available Stock</h3>
+            {% for i in brand %}
+                <p class="add-product-value" data-value="{{ i.add_product_value }}" hidden></p>
+            {% endfor %}
+            <p id="total-value"></p>
+        </a>
+
+        {% if bills %}
+        <a href="/total_sum" class="dashboard-box collected-balance">
+            <i class="fa-solid fa-indian-rupee-sign"></i>
+            <h3>Today's Collected Balance</h3>
+            <p>₹ {{ total_sum }}</p>
+        </a>
+        {% endif %}
+    </div>
+    <div class="chart-container">
+        <canvas id="visitsChart"></canvas>
+    </div>
+
+
+    {% include "footer.html" %}
+
+    <script>
+        let total = 0;
+        document.querySelectorAll('.add-product-value').forEach(el => {
+            total += parseFloat(el.dataset.value || 0);
+        });
+        document.getElementById('total-value').textContent = `${total}`;
+
+        const ctx = document.getElementById('visitsChart').getContext('2d');
+        const visitsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                datasets: [{
+                    label: 'Customer Visits',
+                    data: [12, 19, 3, 5, 2, 3, 7],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return `Visits: ${tooltipItem.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

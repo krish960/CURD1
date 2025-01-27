@@ -1,0 +1,279 @@
+{% include "navbar.html" %}
+
+<style>
+    .table-responsive {
+        max-height: 400px;
+        overflow-x: scroll;
+        width: 100%;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Added box-shadow */
+        padding: 10px;
+    }
+    .purchase-title {
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+        padding: 10px;
+        z-index: 100;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    }
+    .container-box {
+        margin-top: -10px;
+        padding: 15px;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    }
+    .search {
+        width: 200px;
+        border-radius: 10px;
+        padding: 5px 10px;
+    }
+    .btn-custom {
+        margin-right: 10px;
+    }
+    .invoice-container {
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    }
+    table th, table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+    table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+    .total-container {
+        margin-top: 20px;
+    }
+    .table-dark {
+        position: sticky;
+        top: -5px;
+    }
+    .text-danger {
+        color: red;
+        font-weight: bold;
+        animation: enhancedBounce 2s infinite ease-in-out;
+    }
+    @keyframes enhancedBounce {
+        0% {
+            color: red;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+        25% {
+            color: #ff6666;
+            text-shadow: 0 0 10px rgba(255, 100, 100, 0.7);
+        }
+        50% {
+            color: #ff3333;
+            text-shadow: 0 0 15px rgba(255, 50, 50, 0.9);
+        }
+        75% {
+            color: #ff6666;
+            text-shadow: 0 0 10px rgba(255, 100, 100, 0.7);
+        }
+        100% {
+            color: red;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+    }
+</style>
+
+<!-- Page Content -->
+<div class="container-box">
+    <h1 class="purchase-title text-center mb-4">Purchase List</h1>
+    <div class="text-end me-5 mt-2">
+        <h2>All Total: <span class="text-success">{{ total_sum }}</span></h2>
+    </div>
+    <form method="GET" action="/purchase_list/" class="mb-3 d-flex justify-content-end">
+        <div class="input-group">
+           <!--  <button id="saveExcelBtn" class="btn btn-outline-success me-2">
+                <i class="fas fa-file-excel"></i> Export to Excel
+            </button>
+            <button id="saveTxtBtn" class="btn btn-outline-warning me-2">
+                <i class="fas fa-save"></i> Save as Text
+            </button> -->
+            <input type="text" name="search_name" class="search ms-2" placeholder="Search by Customer Name" value="{{ search_query }}" />
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+    {% if bills %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Stack</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th>Gov Tax</th>
+                    <th>Total</th>
+                    <th>Paid Amount</th>
+                    <th>Remaining</th>
+                    <th style="width: 100%;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in bills %}
+                <tr>
+                    <td>{{ bill.id }}</td>
+                    <td>{{ bill.customer.Customer_name }}</td>
+                    <td>{{ bill.stack.brandr_name }}</td>
+                    <td>{{ bill.quantity }}</td>
+                    <td>{{ bill.subtotal }}</td>
+                    <td>{{ bill.gov_tax }}</td>
+                    <td>{{ bill.total }}</td>
+                    <td>{{ bill.paid_price }}</td>
+                    <td class="{% if bill.baki < 0 %}text-danger{% endif %}">{{ bill.baki }}</td>
+                    <td>
+                        <a href="/delete_Purchase/?id={{ bill.id }}" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                        <button class="btn btn-info btn-sm show-bill-btn" 
+                                data-id="{{ bill.id }}" 
+                                data-customer="{{ bill.customer.Customer_name }}" 
+                                data-phone="{{ bill.customer.Customer_phone }}" 
+                                data-stack="{{ bill.stack.brandr_name }}" 
+                                data-quantity="{{ bill.quantity }}" 
+                                data-subtotal="{{ bill.subtotal }}" 
+                                data-tax="{{ bill.gov_tax }}" 
+                                data-total="{{ bill.total }}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center text-muted">No customers found with that name.</p>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const showBillButtons = document.querySelectorAll(".show-bill-btn");
+    const modal = new bootstrap.Modal(document.getElementById("invoiceModal"));
+    const billDetailsContainer = document.getElementById("billDetails");
+    const totalBillAmountContainer = document.getElementById("totalBillAmount");
+
+    showBillButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const customerName = this.dataset.customer;
+            const customerPhone = this.dataset.phone;
+
+            document.getElementById("customerName").innerText = customerName;
+            document.getElementById("customerPhone").innerText = customerPhone;
+
+            billDetailsContainer.innerHTML = "";
+            let totalBill = 0;
+
+            const aggregatedBills = {};
+
+            const customerBills = Array.from(document.querySelectorAll(".show-bill-btn"))
+                .filter(b => b.dataset.customer === customerName && b.dataset.phone === customerPhone);
+
+            customerBills.forEach(bill => {
+                const stack = bill.dataset.stack;
+                const quantity = parseInt(bill.dataset.quantity, 10);
+                const subtotal = parseFloat(bill.dataset.subtotal);
+                const tax = parseFloat(bill.dataset.tax);
+
+                if (!aggregatedBills[stack]) {
+                    aggregatedBills[stack] = { quantity: 0, subtotal: 0, tax: 0 };
+                }
+
+                aggregatedBills[stack].quantity += quantity;
+                aggregatedBills[stack].subtotal += subtotal;
+                aggregatedBills[stack].tax += tax;
+            });
+
+            let index = 1;
+            for (const stack in aggregatedBills) {
+                const bill = aggregatedBills[stack];
+                const total = bill.subtotal + bill.tax;
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${index++}</td>
+                    <td>${stack}</td>
+                    <td>${bill.quantity}</td>
+                    <td>₹${bill.subtotal.toFixed(2)}</td>
+                    <td>₹${bill.tax.toFixed(2)}</td>
+                    <td>₹${total.toFixed(2)}</td>
+                `;
+                billDetailsContainer.appendChild(row);
+                totalBill += total;
+            }
+
+            totalBillAmountContainer.innerText = totalBill.toFixed(2);
+            modal.show();
+        });
+    });
+});
+</script>
+
+{% include "footer.html" %}
+
+
+<div class="modal mt-5 fade" id="invoiceModal" tabindex="-1" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 1300px; margin-left: 265px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="invoiceModalLabel">Invoice Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="width: 1250px; height: 450px; overflow-y: auto;">
+                <div class="invoice-container">
+                    <div class="header">
+                        <img src="/static/download-removebg-preview (1).png" width="50px">
+                        
+                        {% for shop in shop %}
+                        <h1>{{ shop.shop_name }}</h1>
+                        <p>Address: {{ shop.shop_address }} | Phone: {{ shop.shop_number }} | Email: {{ shop.shop_email }}</p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <p><strong>Customer Name:</strong> <span id="customerName"></span></p>
+                        <p><strong>Phone:</strong> <span id="customerPhone"></span></p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Shoe Name</th>
+                                    <th>Quantity</th>
+                                    <th>Subtotal</th>
+                                    <th>Gov Tax</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billDetails"></tbody>
+                        </table>
+                    </div>
+                    <div class="note mt-3">
+                        Note: A government tax of 10% is applied to the subtotal, amounting to ₹<span id="totalBillAmount"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" onclick="window.print()">Print Invoice</button>
+            </div>
+        </div>
+    </div>
+</div>

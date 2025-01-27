@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Payment Page</title>
+    <style>
+        /* Base container with new padding, background color, and shadow */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 12px 50px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+            margin: 40px auto;
+            font-family: Arial, sans-serif;
+        }
+
+        h2 {
+            color: #2c3e50; /* Darker blue-gray */
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        /* Styling for form inputs and button */
+        form {
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: block;
+            color: #34495e; /* Dark gray */
+        }
+
+        select, button, input {
+            padding: 12px;
+            font-size: 16px;
+            margin-top: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 6px;
+            border: 1px solid #bdc3c7; /* Light gray border */
+        }
+
+        .form-box {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            background-color: #ecf0f1; /* Soft light blue */
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Light shadow for form box */
+        }
+
+        button {
+            background-color: #16a085; /* Teal color for the button */
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1abc9c; /* Slightly lighter teal on hover */
+        }
+
+        .customer-info, .payment-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f4f6f7; /* Lighter background color */
+            border-radius: 8px;
+            border: 1px solid #bdc3c7;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for info boxes */
+        }
+
+        .payment-info {
+            text-align: center;
+        }
+
+        .payment-info p {
+            font-size: 18px;
+            color: #7f8c8d; /* Dark gray text */
+        }
+
+        .payment-info a {
+            text-decoration: none;
+            color: #27ae60; /* Green for links */
+            font-weight: bold;
+        }
+
+        .payment-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Navbar -->
+    {% include "navbar.html" %}
+
+    <div class="container">
+        <h2>Customer Payment Page</h2>
+
+        <!-- Form to select a customer -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-box">
+                <div>
+                    <label for="customer">Select Customer:</label>
+                    <select name="customer" id="customer">
+                        <option value="">--Select a Customer--</option>
+                        {% for customer in customers %}
+                            <option value="{{ customer.id }}" {% if selected_customer and selected_customer.id == customer.id %}selected{% endif %}>
+                                {{ customer.Customer_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button type="submit">Show Customer Info</button>
+            </div>
+        </form>
+
+        {% if selected_customer %}
+            <div class="customer-info">
+                <h3>Selected Customer: {{ selected_customer.Customer_name }}</h3>
+                <p>Total Purchase Amount: ₹{{ customer_total_spent }}</p>
+            </div>
+        {% endif %}
+
+        {% if selected_customer %}
+            <!-- Razorpay Payment Form -->
+            <div class="payment-info">
+                <form action="/verify_payment/" method="POST">
+                    {% csrf_token %}
+                    <script src="https://checkout.razorpay.com/v1/checkout.js" 
+                            data-key="{{ api_key }}" 
+                            data-order_id="{{ order_id }}" 
+                            data-amount="{{ amount | floatformat:2 }}" 
+                            data-currency="INR" 
+                            data-buttontext="Pay Now" 
+                            data-name="Shop Name" 
+                            data-description="Payment for Order"
+                            data-image="https://example.com/logo.png">
+                    </script>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    {% include "footer.html" %}
+
+    <script>
+        function filterCustomers() {
+            const searchQuery = document.getElementById("searchInput").value.toLowerCase();
+            const customerSelect = document.getElementById("customer");
+            const options = customerSelect.getElementsByTagName("option");
+
+            for (let i = 0; i < options.length; i++) {
+                const option = options[i];
+                const customerName = option.textContent || option.innerText;
+
+                if (customerName.toLowerCase().includes(searchQuery)) {
+                    option.style.display = "block"; // Show the option
+                } else {
+                    option.style.display = "none"; // Hide the option
+                }
+            }
+        }
+    </script>
+</body>
+</html>

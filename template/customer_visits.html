@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Records</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #eef2f5; 
+            font-family: 'Roboto', sans-serif;
+        }
+
+        h1 {
+            color: #2c3e50; 
+            font-weight: bold;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+        }
+
+        .card-header {
+            background-color: #343a40; 
+            color: white;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .table {
+            background-color: #ffffff; 
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+
+        thead {
+            background-color: #495057; 
+            color: white;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #e2e6ea;
+        }
+
+        .btn-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-container .btn {
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 200px; /* Fixed width for buttons */
+        }
+
+        .btn-container .btn-back {
+            width: 100%;
+        }
+
+        .btn-back a {
+            text-decoration: none;
+            color: white;
+        }
+
+        /* For smaller screens, arrange buttons in a column */
+        @media (max-width: 768px) {
+            .btn-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-container .btn {
+                width: 100%;
+            }
+
+            .btn-container .btn-back {
+                width: 100%;
+                margin-top: 15px; /* Adds spacing above the Back button */
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include "navbar.html" %}
+
+    <div class="container my-5">
+        <div class="card">
+            <div class="card-header text-center">
+                Customer Records
+            </div>
+            <div class="card-body">
+                <div class="btn-container">
+                    <button id="copyBtn" class="btn btn-outline-secondary" title="Copy Table Content">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <button id="saveBtn" class="btn btn-outline-success" title="Save as Text File">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button class="btn btn-primary" onclick="window.print()" title="Print Table">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button class="btn btn-primary btn-back w-25">
+                        <a href="/dashbord/" class="text-white">Back to Dashboard</a>
+                    </button>
+                </div>
+
+                <!-- Table for displaying customer data -->
+                <table class="table table-bordered table-hover text-center">
+                    <thead>
+                        <tr>
+                            <th>Sn</th>
+                            <th>Customer Name</th>
+                            <th>Customer Mobile</th>
+                            <th>Customer Address</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in custmore %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.Customer_name }}</td>
+                            <td>{{ i.Customer_phone }}</td>
+                            <td>{{ i.Customer_addres }}</td>
+                            <td class="dynamicDate"></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+
+    <script>
+        function addDates() {
+            const dateCells = document.querySelectorAll('.dynamicDate'); 
+            const now = new Date();
+            const formattedDate = `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`;
+
+            dateCells.forEach(cell => {
+                cell.textContent = formattedDate;
+            });
+        }
+
+        addDates();
+
+        document.getElementById("copyBtn").addEventListener("click", function() {
+            const tableContent = document.querySelector('.table').innerText;
+            navigator.clipboard.writeText(tableContent).then(function() {
+                alert("Content copied to clipboard!");
+            }, function(err) {
+                alert("Failed to copy content: ", err);
+            });
+        });
+
+        document.getElementById("saveBtn").addEventListener("click", function() {
+            const tableContent = document.querySelector('.table').innerText;
+            const blob = new Blob([tableContent], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = "customer_data.txt";
+            link.click();
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

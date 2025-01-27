@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="login.css">
+    <style>
+        .All_Background {
+            position: relative;
+            background: linear-gradient(to right, #554271, #363a6e);
+            height: 100vh;
+        }
+
+        .All_Background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://a2zithub.com/intern/assest/img/svg/pattern-1.svg') no-repeat center bottom fixed;
+            background-size: cover;
+            opacity: 1.0;
+            z-index: -1;
+        }
+
+        .Login_form {
+            background-color: white;
+            height: 350px;
+            width: 380px;
+        }
+
+        @media (max-width: 768px) {
+            .Login_form {
+                height: 370px;
+                width: 370px;
+            }
+
+            .Button_login {
+                height: 50px;
+                width: 330px;
+                float: left;
+                margin-left: 0;
+            }
+
+            .Text_display {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="All_Background">
+
+    <nav class="navbar navbar-expand-lg shadow">
+        <div class="container">
+            <img src="/static/download-removebg-preview (1).png" height="60" alt="">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <section>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6 mt-5 Text_display">
+                            <div class="text-white ms-5 mt-5">
+                                <h2 class="ms-5 mt-5">LogIn Of Footware Software
+                                    <br><span class="text-warning">A2Z Intern</span></h2>
+                                <p class="ms-5 mt-3 fs-5">This system is designed by A2Z Inter Devloper on 2024. If<br> you have any query about system/software you can contact us<br>on<br>
+                                Call / Whatsapp +919158439277<br>
+                                Visit Our Website a2zinfotechs.com</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-3 d-flex justify-content-center">
+                            <form method="post" class="Login_form mt-5 rounded-1 p-3 bg-light">
+                                {% csrf_token %}
+                                <div class="mb-3 px-4">
+                                    <label for="exampleInputEmail1" class="form-label mt-4">Username</label>
+                                    <input type="text" id="username" class="form-control shadow-none" name="username" required>
+                                    <p class="form-text">Your unique username to app</p>
+                                </div>
+                                <div class="mb-3 px-4">
+                                    <label for="password">Password:</label>
+                                    <input type="password" id="password" class="form-control shadow-none" name="password" required>
+                                    <p class="form-text">Your unique username to app</p>
+                                </div>
+                                <button type="submit" class="btn mt-3 Button_login rounded-1 float-end px-4 py-2 text-white" style="background-color: #fc3491;">Secure Login</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container-fluid">
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <h6 class="text-center text-white mt-5" id="footer-year"></h6>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const footerYear = document.getElementById("footer-year");
+        const currentYear = new Date().getFullYear();
+        footerYear.textContent = `${currentYear} © a2zinfotechs a2zinfotechs.com`;
+    </script>
+</body>
+</html>

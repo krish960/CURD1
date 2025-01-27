@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Calendar</title>
+  <style>
+    
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    nav ul li {
+      margin: 0 15px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background: rgba(26, 32, 53);
+      color: white;
+    }
+
+    .calendar-container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .year-selector {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .year-selector button {
+      background: rgba(26, 32, 53);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .year-selector button:hover {
+      background: #45a049;
+    }
+
+    .year-selector span {
+      margin: 0 20px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .month {
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fafafa;
+      text-align: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .month:hover {
+      background: #f0f0f0;
+      transform: scale(1.05);
+    }
+
+    .highlight-month {
+      background-color: rgba(26, 32, 53);
+      color: white;
+      font-weight: bold;
+    }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .day {
+      padding: 10px;
+      border-radius: 4px;
+      background: #e8f5e9;
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      color: #388e3c;
+    }
+
+    .day:hover {
+      background: #c8e6c9;
+    }
+
+    .highlight-day {
+      background-color: #388e3c;
+      color: white;
+      font-weight: bold;
+      border: 2px solid #2e7d32;
+    }
+
+    h3 {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+      {% include "navbar.html" %}
+
+  
+
+  <div class="calendar-container">
+    <div class="year-selector">
+      <button id="prev-year">&laquo; Previous Year</button>
+      <span id="current-year">2025</span>
+      <button id="next-year">Next Year &raquo;</button>
+    </div>
+    <div class="month-grid" id="month-grid">
+    </div>
+    <div id="days-container"></div>
+  </div>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const yearSpan = document.getElementById("current-year");
+      const monthGrid = document.getElementById("month-grid");
+      const daysContainer = document.getElementById("days-container");
+
+      const months = [
+        "January", "February", "March", "April",
+        "May", "June", "July", "August",
+        "September", "October", "November", "December"
+      ];
+
+     
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
+      const currentDate = today.getDate();
+
+      yearSpan.textContent = currentYear;
+
+      const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
+
+      const renderMonths = () => {
+        monthGrid.innerHTML = months
+          .map(
+            (month, index) =>
+              `<div class="month ${
+                index === currentMonth ? "highlight-month" : ""
+              }" data-month="${index}">${month}</div>`
+          )
+          .join("");
+      };
+
+      const renderDays = (month, year) => {
+        const days = daysInMonth(month, year);
+        daysContainer.innerHTML = `
+          <h3>${months[month]} ${year}</h3>
+          <div class="days-grid">
+            ${Array.from({ length: days }, (_, i) =>
+              `<div class="day ${
+                i + 1 === currentDate &&
+                month === currentMonth &&
+                year === currentYear
+                  ? "highlight-day"
+                  : ""
+              }">${i + 1}</div>`
+            ).join("")}
+          </div>
+        `;
+      };
+
+      const updateYear = (increment) => {
+        const newYear = parseInt(yearSpan.textContent, 10) + increment;
+        yearSpan.textContent = newYear;
+        daysContainer.innerHTML = ""; 
+      };
+
+      document.getElementById("prev-year").addEventListener("click", () => updateYear(-1));
+      document.getElementById("next-year").addEventListener("click", () => updateYear(1));
+
+      monthGrid.addEventListener("click", (e) => {
+        if (e.target.classList.contains("month")) {
+          const monthIndex = parseInt(e.target.dataset.month, 10);
+          const selectedYear = parseInt(yearSpan.textContent, 10);
+          renderDays(monthIndex, selectedYear);
+        }
+      });
+
+      renderMonths();
+      renderDays(currentMonth, currentYear);
+    });
+  </script>
+</body>
+</html>
+    {% include "footer.html" %}

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Design</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .invoice-container {
+        max-width: 1200px;
+        margin: 50px auto;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    .header img {
+        height: 100px;
+    }
+    .header h1 {
+        font-size: 26px;
+        color: #2c3e50;
+        margin: 0;
+    }
+    .header p {
+        font-size: 14px;
+        color: #7f8c8d;
+        margin: 5px 0;
+    }
+
+    .invoice-details {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    .invoice-details p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    table th, table td {
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #ddd;
+        font-size: 14px;
+    }
+    table th {
+        background-color: #f8f9fa;
+        color: #2c3e50;
+        font-weight: bold;
+    }
+    table tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    .total-row td {
+        text-align: right;
+        font-weight: bold;
+    }
+
+    .note {
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-top: 20px;
+    }
+
+    .btn-container {
+        text-align: right;
+        margin-top: 20px;
+    }
+    .btn-container button {
+        margin-left: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 4px;
+        border: none;
+    }
+    .btn-container .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+    }
+    .btn-container .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .btn-container .btn-success {
+        background-color: #28a745;
+        color: #fff;
+    }
+    .btn-container .btn-success:hover {
+        background-color: #218838;
+    }
+
+    #border {
+        border: 1px solid darkgray;
+        margin: 20px 0;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .invoice-container, .invoice-container * {
+            visibility: visible;
+        }
+        .invoice-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+    }
+    .text-green {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+</style>
+
+</head>
+<body>
+
+<div class="invoice-container">
+    <div class="header">
+        <img src="/static/download-removebg-preview (1).png" alt="Logo" style="width:100px">
+        {% for shop in shop %}
+        <div style="text-align: right;">
+            <h1>{{ shop.shop_name }}</h1>
+            <p>Address: {{ shop.shop_address }} <br> Phone: {{ shop.shop_number }} <br> Email: {{ shop.shop_email }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <p id="border"></p>
+
+    <div class="invoice-details">
+        <div>
+            <label><h4>Customer Informations :</h4></label>
+            <p><strong>Bill No:</strong> {% if bills %} {{ bills.0.id }} {% endif %}</p>
+            <p><strong>Customer Name:</strong> {{ customer.Customer_name }}</p>
+            <p><strong>Phone:</strong> {{ customer.customer_phone }}</p>
+        </div>
+        <div>
+            <p><strong>Date:</strong> {{ current_date }}</p>
+            <p><strong>Tax Invoice:</strong> 10%</p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Shoe Name</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th>Total</th>
+                <th>Paid</th>
+                <th>Baki</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bill in bills %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ bill.stack.brandr_name }}</td>
+                <td>{{ bill.quantity }}</td>
+                <td>₹{{ bill.subtotal }}</td>
+                <td>₹{{ bill.total }}</td>
+                <td>{{ bill.paid_price }}</td>
+                <td>{{ bill.baki }}</td>
+                 <td>
+                    {% if bill.total == bill.paid_price %}
+                        <span class="text-green">Paid</span>
+                    {% else %}
+                        <span>Unpaid</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="note">
+        Note: A government tax of 10% is applied to the subtotal, amounting to ₹<strong>{{ total_sum }}</strong>.
+    </div>
+
+<div class="btn-container me-5">
+    <button class="btn btn-primary" onclick="window.print()" title="Print Bill">
+        <i class="fas fa-print"></i> Print Bill
+    </button>
+    <button class="btn btn-success" id="sendWhatsApp" title="Send to WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </button>
+    <button onclick="history.back()" class="btn btn-secondary" title="Go Back">
+        <i class="fas fa-arrow-left"></i> Back
+    </button>
+</div>
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+{% include "footer.html" %}
+
+<script>
+    document.getElementById("sendWhatsApp").addEventListener("click", function() {
+        const customerPhone = "{{ customer.Customer_phone|default:'' }}";
+        const customerName = "{{ customer.Customer_name|default:'Customer' }}";
+        const totalAmount = "{{ total|default:'0.00' }}";
+        const invoiceDate = "{{ current_date|default:'' }}";
+
+        if (!customerPhone) {
+            alert("Customer's phone number is missing. Cannot send the message.");
+            return;
+        }
+
+        const message = `Hello ${customerName},\nHere is your invoice:\n\nDate: ${invoiceDate}\nTotal Amount: ₹{{ total_sum }}\n\nThank you for choosing
+                {% for shop in shop %} 
+                     {{ shop.shop_name }} 
+                {% endfor %}`;
+        const whatsappURL = `https://api.whatsapp.com/send?phone=${customerPhone}&text=${encodeURIComponent(message)}`;
+
+        window.open(whatsappURL, "_blank");
+    });
+</script>
+
+</body>
+</html>
